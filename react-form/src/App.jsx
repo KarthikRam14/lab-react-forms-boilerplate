@@ -1,65 +1,106 @@
 import React from "react";
+import { useForm } from "react-hook-form";
+import { useState } from "react";
+import './App.css'
 
-class FormExample extends React.Component {
-  state = {
-    name: "",
-    email: "",
-    nameError: "",
-    emailError: "",
+function App() {
+  const [success, setSuccess] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSub = (info) => {
+    console.log(info);
+    setSuccess(true);
   };
 
-  handleNameChange = (e) => {
-    this.setState({ name: e.target.value, nameError: "" });
-  };
+  return (
+    <div className="main">
+      <form onSubmit={handleSubmit(onSub)}>
+        <div>
+          {success && <p className="success">Registration Successful</p>}
+        </div>
 
-  handleEmailChange = (e) => {
-    const email = e.target.value;
-    const emailRegex =
-      /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@gmail.com/;  
+        <div className="input-element">
+          <input
+            type="text"
+            name="firstname"
+            placeholder="First Name"
+            {...register("firstname", {
+              required: true,
+            })}
+          />
+          {errors.firstname && errors.firstname.type === "required" && (
+            <p className="error-msg">First Name is required</p>
+          )}
+        </div>
 
-    this.setState(() => ({
-      email: email,
-      emailError: emailRegex.test(email) ? "" : "Invalid email format",
-    }));
-  };
+        <div className="input-element">
+          <input
+            type="text"
+            name="lastname"
+            placeholder="Last Name"
+            {...register("lastname", {
+              required: true,
+            })}
+          />
+          {errors.lastname && errors.lastname.type === "required" && (
+            <p className="error-msg">Last Name is required</p>
+          )}
+        </div>
 
-  handleSubmit = (e) => {
-    e.preventDefault();
+        <div className="input-element">
+          <input
+            type="text"
+            name="email"
+            placeholder="Email"
+            {...register("email", {
+              required: true,
+              pattern: {
+                value: /@gmail.com/,
+                message: "Email is not valid",
+              },
+            })}
+          />
+          {errors.email && errors.email.type === "required" && (
+            <p className="error-msg">Email is required</p>
+          )}
+          {errors.email && <p className="error-msg">{errors.email.message}</p>}
+        </div>
 
-    if (this.state.name === "") {
-      this.setState({ nameError: "Name is required" });
-    }
-    if (this.state.email === "") {
-      this.setState({ emailError: "Email is required" });
-    }
-  };
-
-  render() {
-    return (
-      <form onSubmit={this.handleSubmit}>
-        <div>{this.handleSubmit?(<p>Successfull</p>):null}</div>
-        <label htmlFor="name">Name:</label>
-        <input
-          type="text"
-          id="name"
-          value={this.state.name}
-          onChange={this.handleNameChange}
-        />
-        {this.state.nameError && <p>{this.state.nameError}</p>}
-        <br />
-        <label htmlFor="email">Email:</label>
-        <input
-          type="email"
-          id="email"
-          value={this.state.email}
-          onChange={this.handleEmailChange}
-        />
-        {this.state.emailError && <p>{this.state.emailError}</p>}
-        <br />
-        <button type="submit">Submit</button>
+        <div className="input-element">
+          <input
+            type="text"
+            name="number"
+            placeholder="Phone Number"
+            {...register("number", {
+              required: true,
+              maxLength: 10,
+              minLength: 10,
+            })}
+          />
+          {errors.number && errors.number.type === "required" && (
+            <p className="error-msg">Number is required.</p>
+          )}
+          {errors.number && errors.number.type === "maxLength" && (
+            <p className="error-msg">Number should be of 10 digits.</p>
+          )}
+          {errors.number && errors.number.type === "minLength" && (
+            <p className="error-msg">Number should be of 10 digits.</p>
+          )}
+        </div>
+        <div className="input-element registerbtn">
+          <label></label>
+          <button className="register" type="submit">
+            Register
+          </button>
+        </div>
       </form>
-    );
-  }
+    </div>
+  );
 }
 
-export default FormExample;
+export default App;
